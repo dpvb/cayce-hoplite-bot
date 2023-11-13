@@ -12,8 +12,13 @@ const isInGame = () => {
     return inGame;
 };
 
+const endGame = () => {
+    setInGame(false);
+};
+
 module.exports = {
     setInGame,
     isInGame,
     startGame,
+    endGame,
 };
