@@ -44,7 +44,28 @@ const UUIDToUsername = async (UUID) => {
     return username;
 };
 
+const generalEmbed = (message) => {
+    return {
+        color: 0x0099FF,
+        author: {
+            name: 'Cayce Hoplite Bot',
+        },
+        fields: [
+            {
+                name: '',
+                value: message,
+            },
+        ],
+    };
+};
+
+const replyEmbed = async (interaction, embed) => {
+    await interaction.reply({ embeds: [embed] });
+};
+
 module.exports = {
     usernameToUUID,
     UUIDToUsername,
+    generalEmbed,
+    replyEmbed,
 };
