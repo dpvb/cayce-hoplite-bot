@@ -1,20 +1,21 @@
 let inGame = false;
 
-const setInGame = (value) => {
-    inGame = value;
-};
-
 const startGame = () => {
     setInGame(true);
+};
+
+const endGame = () => {
+    setInGame(false);
+};
+
+const setInGame = (value) => {
+    inGame = value;
 };
 
 const isInGame = () => {
     return inGame;
 };
 
-const endGame = () => {
-    setInGame(false);
-};
 
 module.exports = {
     setInGame,
