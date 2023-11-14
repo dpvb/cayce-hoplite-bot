@@ -1,7 +1,16 @@
-let inGame = false;
+const { UUIDToUsername } = require('./utility');
 
-const startGame = () => {
+let inGame = false;
+let players = [];
+
+const startGame = async (uuids) => {
     setInGame(true);
+    uuids = uuids.split(',');
+    players = [];
+    for (const uuid of uuids) {
+        const username = await UUIDToUsername(uuid);
+        players.push(username);
+    }
 };
 
 const endGame = () => {
@@ -16,10 +25,15 @@ const isInGame = () => {
     return inGame;
 };
 
+const getPlayers = () => {
+    return players;
+};
+
 
 module.exports = {
     setInGame,
     isInGame,
     startGame,
     endGame,
+    getPlayers,
 };

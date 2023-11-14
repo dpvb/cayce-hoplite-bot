@@ -1,19 +1,51 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { isInGame, startGame } = require('../core/game');
-const { generalEmbed, replyEmbed } = require('../core/utility');
+const { isInGame, startGame, getPlayers } = require('../core/game');
+const { generalEmbed, replyEmbed, addZeroWidthSpaceBeforeUnderscore } = require('../core/utility');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('newgame')
-        .setDescription('Create a New Game'),
+        .setDescription('Create a New Game')
+        .addStringOption(option =>
+            option.setName('uuids')
+                .setDescription('Comma-separated list of UUIDS in this game.')
+                .setRequired(true)),
     async execute(interaction) {
-
+        const uuids = interaction.options.getString('uuids');
         if (isInGame()) {
             await replyEmbed(interaction, generalEmbed('There is already a game in progress.'));
             return;
         }
 
-        startGame();
-        await replyEmbed(interaction, generalEmbed('New game has started!'));
+        // Start the Game
+        await startGame(uuids);
+
+        // Get Player List
+        const playerList = getPlayers();
+        let playerListMessage = '';
+        playerList.forEach(name => {
+            playerListMessage += name + '\n';
+        });
+        playerListMessage = addZeroWidthSpaceBeforeUnderscore(playerListMessage);
+
+        // Create Embed
+        const embed = {
+            color: 0x0099FF,
+            author: {
+                name: 'Cayce Hoplite Bot',
+            },
+            fields: [
+                {
+                    name: '',
+                    value: 'The game has started!',
+                },
+                {
+                    name: 'Players',
+                    value: playerListMessage,
+                },
+            ],
+        };
+
+        await replyEmbed(interaction, embed);
     },
 };

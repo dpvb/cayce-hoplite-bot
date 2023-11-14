@@ -63,9 +63,14 @@ const replyEmbed = async (interaction, embed) => {
     await interaction.reply({ embeds: [embed] });
 };
 
+const addZeroWidthSpaceBeforeUnderscore = (text) => {
+    return text.split('_').join('\\_');
+};
+
 module.exports = {
     usernameToUUID,
     UUIDToUsername,
     generalEmbed,
     replyEmbed,
+    addZeroWidthSpaceBeforeUnderscore,
 };
