@@ -33,6 +33,34 @@ const getPlayers = () => {
     return players;
 };
 
+const killedByPlayer = (victim, killer) => {
+    victim = getPlayerByUsername(victim);
+    killer = getPlayerByUsername(killer);
+    victim.died = true;
+    killer.kills.push(victim.username);
+    console.log(victim);
+    console.log(killer);
+};
+
+const killedByNaturalCauses = (victim) => {
+    victim = getPlayerByUsername(victim);
+    victim.died = true;
+    console.log(victim);
+};
+
+const isPlayerInGame = (username) => {
+    return players.some(player => {
+        if (player.username === username) {
+            return true;
+        }
+        return false;
+    });
+};
+
+const getPlayerByUsername = (username) => {
+    return players.find(player => player.username === username);
+};
+
 
 module.exports = {
     setInGame,
@@ -40,4 +68,7 @@ module.exports = {
     startGame,
     endGame,
     getPlayers,
+    isPlayerInGame,
+    killedByPlayer,
+    killedByNaturalCauses,
 };
