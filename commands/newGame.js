@@ -23,8 +23,8 @@ module.exports = {
         // Get Player List
         const playerList = getPlayers();
         let playerListMessage = '';
-        playerList.forEach(name => {
-            playerListMessage += name + '\n';
+        playerList.forEach(player => {
+            playerListMessage += player.username + '\n';
         });
         playerListMessage = addZeroWidthSpaceBeforeUnderscore(playerListMessage);
 

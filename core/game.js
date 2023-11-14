@@ -1,16 +1,20 @@
+const { Player } = require('./player');
 const { UUIDToUsername } = require('./utility');
 
 let inGame = false;
 let players = [];
 
 const startGame = async (uuids) => {
-    setInGame(true);
+    // Register all the Players.
     uuids = uuids.split(',');
     players = [];
     for (const uuid of uuids) {
         const username = await UUIDToUsername(uuid);
-        players.push(username);
+        players.push(new Player(username, uuid));
     }
+
+    // Set game state to true.
+    setInGame(true);
 };
 
 const endGame = () => {
