@@ -1,23 +1,26 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { UUIDToUsername } = require('../core/utility');
+const { calcKillElo, calcDeathToPlayerElo } = require('../core/elo');
 
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('test')
 		.setDescription('Test command!')
-		.addStringOption(option => {
-			return option.setName('input')
-				.setDescription('Input UUID...')
+		.addIntegerOption(option => {
+			return option.setName('test1')
+				.setDescription('loser elo')
+				.setRequired(true);
+		})
+		.addIntegerOption(option => {
+			return option.setName('test2')
+				.setDescription('winner elo')
 				.setRequired(true);
 		}),
 	async execute(interaction) {
-		const UUID = interaction.options.getString('input');
-		try {
-			const username = await UUIDToUsername(UUID);
-			await interaction.reply(username);
-		} catch (err) {
-			console.error(err);
-			await interaction.reply(`An error has occurred: ${err}`);
-		}
+		const loserElo = interaction.options.getInteger('test1');
+		const winnerElo = interaction.options.getInteger('test2');
+
+		const killerElo = calcKillElo(winnerElo, loserElo);
+		const deathElo = calcDeathToPlayerElo(loserElo, winnerElo);
+		await interaction.reply(`Killer ELO: ${killerElo} Death ELO: ${deathElo}`);
 	},
 };

@@ -6,6 +6,10 @@ class Player {
         this.died = false;
         this.elo = 1000;
     }
+
+    setElo(newElo) {
+        this.elo = newElo;
+    }
 }
 
 module.exports = {
