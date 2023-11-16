@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { isInGame, startGame, getPlayers } = require('../core/game');
 const { generalEmbed, replyEmbed, addZeroWidthSpaceBeforeUnderscore } = require('../core/utility');
+const { isAuthorized } = require('../lib/perms');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -11,6 +12,12 @@ module.exports = {
                 .setDescription('Comma-separated list of UUIDS in this game.')
                 .setRequired(true)),
     async execute(interaction) {
+        // Check if player is authorized
+        if (!isAuthorized(interaction.user.id)) {
+            await replyEmbed(interaction, generalEmbed('You are not authorized to use this command.'));
+            return;
+        }
+
         const uuids = interaction.options.getString('uuids');
         if (isInGame()) {
             await replyEmbed(interaction, generalEmbed('There is already a game in progress.'));

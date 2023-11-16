@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { isInGame, isPlayerInGame, removePlayerFromGame } = require('../core/game');
 const { replyEmbed, generalEmbed } = require('../core/utility');
+const { isAuthorized } = require('../lib/perms');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -11,6 +12,12 @@ module.exports = {
             .setDescription('The name of the player you want to remove.')
             .setRequired(true)),
     async execute(interaction) {
+        // Check if player is authorized
+        if (!isAuthorized(interaction.user.id)) {
+            await replyEmbed(interaction, generalEmbed('You are not authorized to use this command.'));
+            return;
+        }
+
         if (!isInGame()) {
             await replyEmbed(interaction, generalEmbed('There is currently no game running.'));
             return;
