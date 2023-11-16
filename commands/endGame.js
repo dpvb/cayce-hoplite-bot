@@ -23,7 +23,7 @@ module.exports = {
             return;
         }
         // End the game.
-        endGame(winner);
+        await endGame(winner);
         await replyEmbed(interaction, generalEmbed('The game has been ended!'));
     },
 };

@@ -37,5 +37,16 @@ for (const file of eventFile) {
 	}
 }
 
+// Connect to Database
+const { sequelize } = require('./db/connect');
+sequelize.authenticate().then(() => {
+	console.log('Connected to database.');
+}).catch((err) => {
+	console.error(`Failed to connect to database: ${err}`);
+	console.error('Exiting...');
+	// end the process
+	process.exit(1);
+});
+
 // Login
 client.login(process.env.DISCORD_TOKEN);

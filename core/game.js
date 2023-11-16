@@ -1,3 +1,4 @@
+const { getPlayer, createPlayer, updateStats } = require('../db/controllers/player-controller');
 const { calcDeathToNCElo, calcKillElo, calcDeathToPlayerElo, calcPlacementEloGain, calcWinnerEloGain } = require('./elo');
 const { Player } = require('./player');
 const { UUIDToUsername } = require('./utility');
@@ -5,26 +6,38 @@ const { UUIDToUsername } = require('./utility');
 let inGame = false;
 let players = [];
 let placement = [];
+let dbPlayers = [];
 
 const startGame = async (uuids) => {
     // Register all the Players.
     uuids = uuids.split(',');
     players = [];
     placement = [];
+    dbPlayers = [];
     for (const uuid of uuids) {
         if (uuid === '5ebbbc83-a7e8-4bcf-9045-2f92fa539cff') {
             console.log('found cayci');
             continue;
         }
         const username = await UUIDToUsername(uuid);
-        players.push(new Player(username, uuid));
+        // Retrieve Player from Database.
+        let dbPlayer = await getPlayer(uuid);
+        if (dbPlayer == null) {
+           dbPlayer = await createPlayer(uuid);
+        }
+        dbPlayers.push(dbPlayer);
+
+        const player = new Player(username, uuid, dbPlayer.elo);
+        players.push(player);
     }
+
+    console.log(players);
 
     // Set game state to true.
     setInGame(true);
 };
 
-const endGame = (winner) => {
+const endGame = async (winner) => {
     // Place the winner in the first placement spot.
     placement.unshift(winner);
     // Calculate placement elo gain for every player.
@@ -59,6 +72,19 @@ const endGame = (winner) => {
     for (const player of players) {
         player.elo = Math.round(player.elo);
         console.log(`${player.username} - ${player.elo}`);
+    }
+
+    // Save all players to the database.
+    for (const player of players) {
+        const dbPlayer = dbPlayers.find(dbp => dbp.uuid === player.uuid);
+        const stats = {
+            kills: dbPlayer.kills + player.kills.length,
+            deaths: dbPlayer.deaths + (player.died ? 1 : 0),
+            wins: dbPlayer.wins + (player.username === winner ? 1 : 0),
+            gamesPlayed: dbPlayer.gamesPlayed + 1,
+            elo: player.elo,
+        };
+        await updateStats(dbPlayer.uuid, stats);
     }
 
     // Set game state to false.
